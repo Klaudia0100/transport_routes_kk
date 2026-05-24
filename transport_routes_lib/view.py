@@ -29,6 +29,32 @@ def remove_company() -> None:
     companies.pop(i)
     show_companies()
 
+
+def edit_company():
+    i = listbox_list_object.index(ACTIVE)
+    name = companies[i].name
+    city = companies[i].city
+    street = companies[i].street
+
+    entry_name.insert(0, name)
+    entry_city.insert(0, city)
+    entry_street.insert(0, street)
+
+    button_add_object.config(text = "Zapisz zmiany", command = lambda: update_company(i))
+
+def update_company(i):
+    companies[i].name = entry_name.get()
+    companies[i].city = entry_city.get()
+    companies[i].street = entry_street.get()
+
+    button_add_object.config(text = "Dodaj firmę", command = add_company)
+    entry_name.delete(0, END)
+    entry_city.delete(0, END)
+    entry_street.delete(0, END)
+
+    entry_name.focus()
+    show_companies()
+
 root = Tk()
 root.title("Aplikacja Zarządzania Firmami i Trasami")
 root.geometry("1024x760")
@@ -51,7 +77,7 @@ listbox_list_object = Listbox(frame_list_object)
 
 button_show_object_details = Button(frame_list_object, text="Pokaż szczegóły")
 button_delete_object = Button(frame_list_object, text="Usuń", command = remove_company)
-button_edit_object = Button(frame_list_object, text="Edytuj")
+button_edit_object = Button(frame_list_object, text="Edytuj", command = edit_company)
 
 label_list_object.grid(row=0, column=0)
 listbox_list_object.grid(row=1, column=0)
