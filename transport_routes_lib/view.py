@@ -24,6 +24,11 @@ def add_company():
 
     show_companies()
 
+def remove_company() -> None:
+    i = listbox_list_object.index(ACTIVE)
+    companies.pop(i)
+    show_companies()
+
 root = Tk()
 root.title("Aplikacja Zarządzania Firmami i Trasami")
 root.geometry("1024x760")
@@ -45,7 +50,7 @@ label_list_object = Label(frame_list_object, text="Lista firm: ")
 listbox_list_object = Listbox(frame_list_object)
 
 button_show_object_details = Button(frame_list_object, text="Pokaż szczegóły")
-button_delete_object = Button(frame_list_object, text="Usuń")
+button_delete_object = Button(frame_list_object, text="Usuń", command = remove_company)
 button_edit_object = Button(frame_list_object, text="Edytuj")
 
 label_list_object.grid(row=0, column=0)
