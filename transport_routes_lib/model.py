@@ -25,6 +25,7 @@ class Company:
         self.street = street
         address = f"{city}, {street}"
         self.coordinates = get_coordinates(address)
+        self.marker = None
         self.clients = []
 
 

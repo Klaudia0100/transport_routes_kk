@@ -16,6 +16,7 @@ def show_companies() -> None:
     for idx, company in enumerate(companies):
         listbox_list_object.insert(idx, company.name)
 
+
 def add_company():
     name = entry_name.get()
     city = entry_city.get()
@@ -34,6 +35,7 @@ def add_company():
     entry_name.focus()
     show_companies()
 
+
 def remove_company() -> None:
     i = listbox_list_object.index(ACTIVE)
 
@@ -44,6 +46,17 @@ def remove_company() -> None:
     companies.pop(i)
     show_companies()
 
+def show_company_details():
+    i = listbox_list_object.index(ACTIVE)
+    name = companies[i].name
+    city = companies[i].city
+    street = companies[i].street
+
+    label_name_details_object_value.config(text = name)
+    label_city_details_object_value.config(text = city)
+    label_street_details_object_value.config(text = street)
+    map_widget.set_position(companies[i].coordinates[0], companies[i].coordinates[1])
+    map_widget.set_zoom(12)
 
 def edit_company():
     i = listbox_list_object.index(ACTIVE)
@@ -56,6 +69,7 @@ def edit_company():
     entry_street.insert(0, street)
 
     button_add_object.config(text = "Zapisz zmiany", command = lambda: update_company(i))
+
 
 def update_company(i):
     companies[i].name = entry_name.get()
@@ -73,7 +87,6 @@ def update_company(i):
     entry_name.delete(0, END)
     entry_city.delete(0, END)
     entry_street.delete(0, END)
-
 
     entry_name.focus()
     show_companies()
@@ -98,7 +111,7 @@ frame_map.grid(row=2, column=0, columnspan=2)
 label_list_object = Label(frame_list_object, text="Lista firm: ")
 listbox_list_object = Listbox(frame_list_object)
 
-button_show_object_details = Button(frame_list_object, text="Pokaż szczegóły")
+button_show_object_details = Button(frame_list_object, text="Pokaż szczegóły", command = show_company_details)
 button_delete_object = Button(frame_list_object, text="Usuń", command = remove_company)
 button_edit_object = Button(frame_list_object, text="Edytuj", command = edit_company)
 
