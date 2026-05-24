@@ -1,13 +1,30 @@
+import tkintermapview
+
 companies: list = []
 employees: list = []
 routes: list = []
 
+def _build_headers(self, provider_key, **kwargs):
+    return {"User-Agent": 'My User Agent 1.0'}
+
+
+def get_coordinates(address: str):
+    from geocoder.osm import OsmQuery
+    OsmQuery._build_headers = _build_headers
+    data = tkintermapview.convert_address_to_coordinates(address)
+    if data is None:
+        return [0, 0]
+    latitude = float(data[0])
+    longitude = float(data[1])
+    return [latitude, longitude]
 
 class Company:
     def __init__(self, name: str, city: str, street: str):
         self.name = name
         self.city = city
         self.street = street
+        address = f"{city}, {street}"
+        self.coordinates = get_coordinates(address)
         self.clients = []
 
 
