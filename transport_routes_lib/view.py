@@ -1,6 +1,29 @@
 from tkinter import *
 import tkintermapview
 
+from model import Company, companies
+
+
+def show_companies() -> None:
+    listbox_list_object.delete(0, END)
+
+    for idx, company in enumerate(companies):
+        listbox_list_object.insert(idx, company.name)
+
+def add_company():
+    name = entry_name.get()
+    city = entry_city.get()
+    street = entry_street.get()
+
+    new_company = Company(name, city, street)
+    companies.append(new_company)
+
+    entry_name.delete(0, END)
+    entry_city.delete(0, END)
+    entry_street.delete(0, END)
+
+    show_companies()
+
 root = Tk()
 root.title("Aplikacja Zarządzania Firmami i Trasami")
 root.geometry("1024x760")
@@ -51,7 +74,7 @@ entry_name.grid(row=1, column=1)
 entry_city.grid(row=2, column=1)
 entry_street.grid(row=3, column=1)
 
-button_add_object = Button(frame_form, text="Dodaj firmę")
+button_add_object = Button(frame_form, text="Dodaj firmę", command=add_company)
 button_add_object.grid(row=5, column=0, columnspan=2)
 
 
