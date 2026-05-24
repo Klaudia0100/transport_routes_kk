@@ -1,8 +1,14 @@
 from tkinter import *
 import tkintermapview
 
-from model import Company, companies
+from model import Company, companies, get_coordinates
 
+def create_company_marker(company):
+    company.marker = map_widget.set_marker(
+        company.coordinates[0],
+        company.coordinates[1],
+        text=company.name
+    )
 
 def show_companies() -> None:
     listbox_list_object.delete(0, END)
@@ -18,14 +24,23 @@ def add_company():
     new_company = Company(name, city, street)
     companies.append(new_company)
 
+    create_company_marker(new_company)
+    map_widget.set_position(new_company.coordinates[0], new_company.coordinates[1])
+
     entry_name.delete(0, END)
     entry_city.delete(0, END)
     entry_street.delete(0, END)
 
+    entry_name.focus()
     show_companies()
 
 def remove_company() -> None:
     i = listbox_list_object.index(ACTIVE)
+
+    company = companies[i]
+    if company.marker:
+        company.marker.delete()
+
     companies.pop(i)
     show_companies()
 
@@ -47,10 +62,18 @@ def update_company(i):
     companies[i].city = entry_city.get()
     companies[i].street = entry_street.get()
 
+    address = f"{companies[i].city}, {companies[i].street}"
+    companies[i].coordinates = get_coordinates(address)
+
+    if companies[i].marker:
+        companies[i].marker.set_position(companies[i].coordinates[0], companies[i].coordinates[1])
+        companies[i].marker.set_text(companies[i].name)
+
     button_add_object.config(text = "Dodaj firmę", command = add_company)
     entry_name.delete(0, END)
     entry_city.delete(0, END)
     entry_street.delete(0, END)
+
 
     entry_name.focus()
     show_companies()
