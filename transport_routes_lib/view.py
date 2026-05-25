@@ -157,6 +157,20 @@ def remove_employee() -> None:
     show_employees()
 
 
+def remove_route() -> None:
+    i = listbox_list_object_route.index(ACTIVE)
+
+    route = routes[i]
+    if route.marker_start:
+        map_widget_route.delete(route.marker_start)
+    if route.marker_end:
+        map_widget_route.delete(route.marker_end)
+    if route.path:
+        map_widget_route.delete(route.path)
+
+    routes.pop(i)
+    show_routes()
+
 #SHOW OBJECT DETAILS
 def show_company_details():
     i = listbox_list_object.index(ACTIVE)
@@ -490,7 +504,7 @@ frame_map_route.grid(row=2, column=0, columnspan=2)
 label_list_object_route = Label(frame_list_object_route, text="Lista tras: ")
 listbox_list_object_route = Listbox(frame_list_object_route)
 button_show_details_route = Button(frame_list_object_route, text="Pokaż szczegóły")
-button_delete_route = Button(frame_list_object_route, text="Usuń")
+button_delete_route = Button(frame_list_object_route, text="Usuń", command = remove_route)
 button_edit_route = Button(frame_list_object_route, text="Edytuj")
 
 label_list_object_route.grid(row=0, column=0)
