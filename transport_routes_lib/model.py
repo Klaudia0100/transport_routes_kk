@@ -41,8 +41,16 @@ class Employee:
 
 
 class Route:
-    def __init__(self, name: str, start_location: str, end_location: str, company_name: str):
+    def __init__(self, name, start_city, start_street, end_city, end_street, company):
         self.name = name
-        self.start_location = start_location
-        self.end_location = end_location
-        self.company_name = company_name
+        self.company = company
+
+        self.start_location = f"{start_city}, {start_street}"
+        self.end_location = f"{end_city}, {end_street}"
+        self.start_coords = get_coordinates(self.start_location)
+        self.end_coords = get_coordinates(self.end_location)
+
+        self.marker_start = None
+        self.marker_end = None
+        self.path = None
+
