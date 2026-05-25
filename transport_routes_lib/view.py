@@ -1,8 +1,9 @@
 from tkinter import *
 import tkinter.ttk as ttk
 import tkintermapview
+from tkinter import messagebox
 
-from model import Company, companies, Employee, employees, get_coordinates
+from model import Company, companies, Employee, employees, Route, routes, get_coordinates
 
 # MAP MARKER
 def create_company_marker(company):
@@ -10,6 +11,38 @@ def create_company_marker(company):
 
 def create_employee_marker(employee):
     employee.marker = map_widget_employee.set_marker(employee.coordinates[0], employee.coordinates[1], text=f"{employee.name} {employee.surname}")
+
+def on_marker_click(marker):
+    if marker.text != "":
+        marker.set_text("")
+    else:
+        marker.set_text(marker.info_text)
+
+def create_route_markers(route):
+    route.marker_start = map_widget_route.set_marker(route.start_coords[0],route.start_coords[1],text="",command=on_marker_click)
+    route.marker_start.info_text = f"Start: {route.start_location}"
+
+    route.marker_end = map_widget_route.set_marker(route.end_coords[0],route.end_coords[1],text="", command=on_marker_click)
+    route.marker_end.info_text = f"Koniec: {route.end_location}"
+
+# MAP LINES (ROUTES)
+def create_route_path(route):
+    route.path = map_widget_route.set_path([route.start_coords, route.end_coords])
+
+
+def create_route_visualization(route):
+    create_route_markers(route)
+    create_route_path(route)
+
+    lat1, lon1 = route.start_coords
+    lat2, lon2 = route.end_coords
+
+    top = max(lat1, lat2)
+    left = min(lon1, lon2)
+    bottom = min(lat1, lat2)
+    right = max(lon1, lon2)
+
+    map_widget_route.fit_bounding_box((top, left), (bottom, right))
 
 # SHOW OBJECT ON LIST
 def show_companies() -> None:
@@ -23,6 +56,12 @@ def show_employees() -> None:
 
     for idx, employee in enumerate(employees):
         listbox_list_object_employee.insert(idx, employee.name)
+
+def show_routes() -> None:
+    listbox_list_object_route.delete(0, END)
+
+    for idx, route in enumerate(routes):
+        listbox_list_object_route.insert(idx, route.name)
 
 # ADD OBJECT ON LIST
 def add_company():
@@ -51,9 +90,6 @@ def add_employee():
     company = combobox_company_employee.get()
 
     selected_company = combobox_company_employee.get()
-    if not selected_company:
-        print("Błąd: Nie wybrano firmy!")
-        return
 
     new_employee = Employee(name, surname, city, street, company)
     employees.append(new_employee)
@@ -65,14 +101,39 @@ def add_employee():
     entry_surname_employee.delete(0, END)
     entry_city_employee.delete(0, END)
     entry_street_employee.delete(0, END)
-
     combobox_company_employee.set('')
+
     entry_name_employee.focus()
     show_employees()
+
+def add_route():
+    name = entry_name_route.get()
+    start_city = entry_start_city.get()
+    start_street = entry_start_street.get()
+    end_city = entry_end_city.get()
+    end_street = entry_end_street.get()
+    company = combobox_company_route.get()
+
+    new_route = Route(name, start_city, start_street, end_city, end_street, company)
+    routes.append(new_route)
+
+    create_route_visualization(new_route)
+
+    entry_name_route.delete(0, END)
+    entry_start_city.delete(0, END)
+    entry_start_street.delete(0, END)
+    entry_end_city.delete(0, END)
+    entry_end_street.delete(0, END)
+    combobox_company_route.set('')
+
+    entry_name_route.focus()
+    show_routes()
 
 def update_company_dropdown():
     company_names = [c.name for c in companies]
     combobox_company_employee['values'] = company_names
+    combobox_company_route['values'] = company_names
+
 
 #REMOVE OBJECT FROM LIST
 def remove_company() -> None:
@@ -224,6 +285,7 @@ def switch_view(event=None):
         frame_route.grid(row=1, column=0, columnspan=2)
         frame_company.grid_forget()
         frame_employee.grid_forget()
+        update_company_dropdown()
 
 combobox_view = ttk.Combobox(root, textvariable=selected_view, values=["Firmy", "Pracownicy", "Trasy"], state="readonly")
 combobox_view.set("Firmy")
@@ -437,32 +499,43 @@ button_show_details_route.grid(row=2, column=0)
 button_delete_route.grid(row=2, column=1)
 button_edit_route.grid(row=2, column=2)
 
-
 # RAMKA FORMULARZ ROUTE
-label_form_route = Label(frame_form_route, text="Formularz: ")
-label_name_route = Label(frame_form_route, text="Nazwa trasy: ")
-label_start_route = Label(frame_form_route, text="Start: ")
-label_end_route = Label(frame_form_route, text="Koniec: ")
-label_company_route = Label(frame_form_route, text="Firma: ")
+label_form_route = Label(frame_form_route, text="Formularz:")
+label_name_route = Label(frame_form_route, text="Nazwa trasy:")
+label_start = Label(frame_form_route, text="Start:")
+label_start_city = Label(frame_form_route, text="miasto")
+label_start_street = Label(frame_form_route, text="ulica")
+label_end = Label(frame_form_route, text="Koniec:")
+label_end_city = Label(frame_form_route, text="miasto")
+label_end_street = Label(frame_form_route, text="ulica")
+label_company_route = Label(frame_form_route, text="Firma:")
 
-label_form_route.grid(row=0, column=0, columnspan=2)
+label_form_route.grid(row=0, column=0, columnspan=3, pady=5)
 label_name_route.grid(row=1, column=0, sticky=W)
-label_start_route.grid(row=2, column=0, sticky=W)
-label_end_route.grid(row=3, column=0, sticky=W)
-label_company_route.grid(row=4, column=0, sticky=W)
+label_start.grid(row=2, column=0, sticky=W)
+label_start_city.grid(row=2, column=1, sticky=W, padx=5)
+label_start_street.grid(row=3, column=1, sticky=W, padx=5)
+label_end.grid(row=4, column=0, sticky=W)
+label_end_city.grid(row=4, column=1, sticky=W, padx=5)
+label_end_street.grid(row=5, column=1, sticky=W, padx=5)
+label_company_route.grid(row=6, column=0, sticky=W)
 
 entry_name_route = Entry(frame_form_route)
-entry_start_route = Entry(frame_form_route)
-entry_end_route = Entry(frame_form_route)
+entry_start_city = Entry(frame_form_route)
+entry_start_street = Entry(frame_form_route)
+entry_end_city = Entry(frame_form_route)
+entry_end_street = Entry(frame_form_route)
 combobox_company_route = ttk.Combobox(frame_form_route, state="readonly")
 
-entry_name_route.grid(row=1, column=1)
-entry_start_route.grid(row=2, column=1)
-entry_end_route.grid(row=3, column=1)
-combobox_company_route.grid(row=4, column=1)
+entry_name_route.grid(row=1, column=2, sticky=W)
+entry_start_city.grid(row=2, column=2, sticky=W)
+entry_start_street.grid(row=3, column=2, sticky=W)
+entry_end_city.grid(row=4, column=2, sticky=W)
+entry_end_street.grid(row=5, column=2, sticky=W)
+combobox_company_route.grid(row=6, column=2, sticky=W)
 
-button_add_route = Button(frame_form_route, text="Dodaj trasę")
-button_add_route.grid(row=6, column=0, columnspan=2)
+button_add_route = Button(frame_form_route, text="Dodaj trasę", command=add_route)
+button_add_route.grid(row=7, column=0, columnspan=3, pady=10)
 
 # SZCZEGÓŁY OBIEKTU ROUTE
 label_details_title_route = Label(frame_details_object_route, text="Szczegóły trasy")
