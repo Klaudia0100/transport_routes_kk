@@ -211,16 +211,22 @@ selected_view = StringVar()
 
 def switch_view(event=None):
     view = selected_view.get()
-    if view == "Firma":
+    if view == "Firmy":
         frame_company.grid(row=1, column=0, columnspan=2)
         frame_employee.grid_forget()
+        frame_route.grid_forget()
     elif view == "Pracownicy":
         frame_employee.grid(row=1, column=0, columnspan=2)
         frame_company.grid_forget()
+        frame_route.grid_forget()
         update_company_dropdown()
+    elif view == "Trasy":
+        frame_route.grid(row=1, column=0, columnspan=2)
+        frame_company.grid_forget()
+        frame_employee.grid_forget()
 
-combobox_view = ttk.Combobox(root, textvariable=selected_view, values=["Firma", "Pracownicy"], state="readonly")
-combobox_view.set("Firma")
+combobox_view = ttk.Combobox(root, textvariable=selected_view, values=["Firmy", "Pracownicy", "Trasy"], state="readonly")
+combobox_view.set("Firmy")
 combobox_view.grid(row=0, column=0, sticky=W, padx=10, pady=10)
 combobox_view.bind("<<ComboboxSelected>>", switch_view)
 
@@ -257,7 +263,7 @@ button_edit_object.grid(row=2, column=2)
 
 # RAMKA FORMULARZ COMPANY
 label_form = Label(frame_form, text="Formularz: ")
-label_name = Label(frame_form, text="Nazwa: ")
+label_name = Label(frame_form, text="Nazwa firmy: ")
 label_city = Label(frame_form, text="Miasto: ")
 label_street = Label(frame_form, text="Ulica: ")
 
@@ -281,7 +287,7 @@ button_add_object.grid(row=5, column=0, columnspan=2)
 # SZCZEGÓŁY OBIEKTU COMPANY
 label_details_object_title = Label(frame_details_object, text="Szczegóły firmy")
 
-label_name_details_object = Label(frame_details_object, text="Nazwa:")
+label_name_details_object = Label(frame_details_object, text="Nazwa firmy:")
 label_name_details_object_value = Label(frame_details_object, text="...")
 
 label_city_details_object = Label(frame_details_object, text="Miasto:")
@@ -403,6 +409,87 @@ map_widget_employee = tkintermapview.TkinterMapView(frame_map_employee, width=10
 map_widget_employee.set_zoom(6)
 map_widget_employee.set_position(52.2, 21.0)
 map_widget_employee.grid(row=0, column=0)
+
+
+# FRAME ROUTE
+frame_route = Frame(root)
+
+frame_list_object_route = Frame(frame_route)
+frame_form_route = Frame(frame_route)
+frame_details_object_route = Frame(frame_route)
+frame_map_route = Frame(frame_route)
+
+frame_list_object_route.grid(row=0, column=0, padx=50)
+frame_form_route.grid(row=0, column=1)
+frame_details_object_route.grid(row=1, column=0, columnspan=2, padx=50, pady=20)
+frame_map_route.grid(row=2, column=0, columnspan=2)
+
+# RAMKA LISTA OBIEKTÓW ROUTE
+label_list_object_route = Label(frame_list_object_route, text="Lista tras: ")
+listbox_list_object_route = Listbox(frame_list_object_route)
+button_show_details_route = Button(frame_list_object_route, text="Pokaż szczegóły")
+button_delete_route = Button(frame_list_object_route, text="Usuń")
+button_edit_route = Button(frame_list_object_route, text="Edytuj")
+
+label_list_object_route.grid(row=0, column=0)
+listbox_list_object_route.grid(row=1, column=0)
+button_show_details_route.grid(row=2, column=0)
+button_delete_route.grid(row=2, column=1)
+button_edit_route.grid(row=2, column=2)
+
+
+# RAMKA FORMULARZ ROUTE
+label_form_route = Label(frame_form_route, text="Formularz: ")
+label_name_route = Label(frame_form_route, text="Nazwa trasy: ")
+label_start_route = Label(frame_form_route, text="Start: ")
+label_end_route = Label(frame_form_route, text="Koniec: ")
+label_company_route = Label(frame_form_route, text="Firma: ")
+
+label_form_route.grid(row=0, column=0, columnspan=2)
+label_name_route.grid(row=1, column=0, sticky=W)
+label_start_route.grid(row=2, column=0, sticky=W)
+label_end_route.grid(row=3, column=0, sticky=W)
+label_company_route.grid(row=4, column=0, sticky=W)
+
+entry_name_route = Entry(frame_form_route)
+entry_start_route = Entry(frame_form_route)
+entry_end_route = Entry(frame_form_route)
+combobox_company_route = ttk.Combobox(frame_form_route, state="readonly")
+
+entry_name_route.grid(row=1, column=1)
+entry_start_route.grid(row=2, column=1)
+entry_end_route.grid(row=3, column=1)
+combobox_company_route.grid(row=4, column=1)
+
+button_add_route = Button(frame_form_route, text="Dodaj trasę")
+button_add_route.grid(row=6, column=0, columnspan=2)
+
+# SZCZEGÓŁY OBIEKTU ROUTE
+label_details_title_route = Label(frame_details_object_route, text="Szczegóły trasy")
+label_name_details_route = Label(frame_details_object_route, text="Nazwa trasy:")
+label_name_val_route = Label(frame_details_object_route, text="...")
+label_start_details_route = Label(frame_details_object_route, text="Start:")
+label_start_val_route = Label(frame_details_object_route, text="...")
+label_end_details_route = Label(frame_details_object_route, text="Koniec:")
+label_end_val_route = Label(frame_details_object_route, text="...")
+label_comp_details_route = Label(frame_details_object_route, text="Firma:")
+label_comp_val_route = Label(frame_details_object_route, text="...")
+
+label_details_title_route.grid(row=0, column=0, columnspan=8)
+label_name_details_route.grid(row=1, column=0)
+label_name_val_route.grid(row=1, column=1)
+label_start_details_route.grid(row=1, column=2)
+label_start_val_route.grid(row=1, column=3)
+label_end_details_route.grid(row=1, column=4)
+label_end_val_route.grid(row=1, column=5)
+label_comp_details_route.grid(row=1, column=6)
+label_comp_val_route.grid(row=1, column=7)
+
+# RAMKA MAPA ROUTE
+map_widget_route = tkintermapview.TkinterMapView(frame_map_route, width=1024, height=600, corner_radius=4)
+map_widget_route.set_zoom(6)
+map_widget_route.set_position(52.2, 21.0)
+map_widget_route.grid(row=0, column=0)
 
 # APP START
 frame_company.grid(row=1, column=0, columnspan=2)

@@ -41,8 +41,8 @@ class Employee:
 
 
 class Route:
-    def __init__(self, name: str, start_location: str, end_location: str, company_name: str):
+    def __init__(self, name: str, start_location: str, end_location: str, company: str):
         self.name = name
         self.start_location = start_location
         self.end_location = end_location
-        self.company_name = company_name
+        self.company = company
