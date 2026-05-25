@@ -1,7 +1,6 @@
 from tkinter import *
 import tkinter.ttk as ttk
 import tkintermapview
-from tkinter import messagebox
 
 from model import Company, companies, Employee, employees, Route, routes, get_coordinates
 
@@ -230,6 +229,23 @@ def edit_employee():
 
     button_add_object_employee.config(text="Zapisz zmiany", command=lambda: update_employee(i))
 
+def edit_route():
+    i = listbox_list_object_route.index(ACTIVE)
+    name = routes[i].name
+    # Rozbijamy start_location i end_location tak jak Ty to robisz w klasie
+    start_parts = routes[i].start_location.split(", ")
+    end_parts = routes[i].end_location.split(", ")
+    company = routes[i].company
+
+    entry_name_route.insert(0, name)
+    entry_start_city.insert(0, start_parts[0])
+    entry_start_street.insert(0, start_parts[1])
+    entry_end_city.insert(0, end_parts[0])
+    entry_end_street.insert(0, end_parts[1])
+    combobox_company_route.set(company)
+
+    button_add_route.config(text="Zapisz zmiany", command=lambda: update_route(i))
+
 #UPDATE OBJECT DETAILS
 def update_company(i):
     companies[i].name = entry_name.get()
@@ -275,6 +291,37 @@ def update_employee(i):
 
     entry_name_employee.focus()
     show_employees()
+
+def update_route(i):
+    routes[i].name = entry_name_route.get()
+    routes[i].company = combobox_company_route.get()
+    routes[i].start_location = f"{entry_start_city.get()}, {entry_start_street.get()}"
+    routes[i].end_location = f"{entry_end_city.get()}, {entry_end_street.get()}"
+    routes[i].start_coords = get_coordinates(routes[i].start_location)
+    routes[i].end_coords = get_coordinates(routes[i].end_location)
+
+    if routes[i].marker_start:
+        routes[i].marker_start.set_position(routes[i].start_coords[0], routes[i].start_coords[1])
+        routes[i].marker_start.info_text = f"Start: {routes[i].start_location}"
+    if routes[i].marker_end:
+        routes[i].marker_end.set_position(routes[i].end_coords[0], routes[i].end_coords[1])
+        routes[i].marker_end.info_text = f"Koniec: {routes[i].end_location}"
+    if routes[i].path:
+        map_widget_route.delete(routes[i].path)
+    routes[i].path = map_widget_route.set_path([routes[i].start_coords, routes[i].end_coords])
+
+    button_add_route.config(text="Dodaj trasę", command = add_route)
+
+    entry_name_route.delete(0, END)
+    entry_start_city.delete(0, END)
+    entry_start_street.delete(0, END)
+    entry_end_city.delete(0, END)
+    entry_end_street.delete(0, END)
+    combobox_company_route.set('')
+
+    entry_name_route.focus()
+    show_routes()
+
 
 # APPLICATION WINDOW
 root = Tk()
@@ -505,7 +552,7 @@ label_list_object_route = Label(frame_list_object_route, text="Lista tras: ")
 listbox_list_object_route = Listbox(frame_list_object_route)
 button_show_details_route = Button(frame_list_object_route, text="Pokaż szczegóły")
 button_delete_route = Button(frame_list_object_route, text="Usuń", command = remove_route)
-button_edit_route = Button(frame_list_object_route, text="Edytuj")
+button_edit_route = Button(frame_list_object_route, text="Edytuj", command = edit_route)
 
 label_list_object_route.grid(row=0, column=0)
 listbox_list_object_route.grid(row=1, column=0)
