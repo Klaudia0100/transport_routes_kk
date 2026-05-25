@@ -18,13 +18,13 @@ def get_coordinates(address: str):
     longitude = float(data[1])
     return [latitude, longitude]
 
+
 class Company:
     def __init__(self, name: str, city: str, street: str):
         self.name = name
         self.city = city
         self.street = street
-        address = f"{city}, {street}"
-        self.coordinates = get_coordinates(address)
+        self.coordinates = get_coordinates(f"{city}, {street}")
         self.marker = None
         self.clients = []
 
@@ -36,6 +36,8 @@ class Employee:
         self.city = city
         self.street = street
         self.company_name = company_name
+        self.coordinates = get_coordinates(f"{city}, {street}")
+        self.marker = None
 
 
 class Route:

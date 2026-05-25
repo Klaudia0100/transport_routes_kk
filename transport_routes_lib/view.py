@@ -2,22 +2,29 @@ from tkinter import *
 import tkinter.ttk as ttk
 import tkintermapview
 
-from model import Company, companies, get_coordinates
+from model import Company, companies, Employee, employees, get_coordinates
 
+# MAP MARKER
 def create_company_marker(company):
-    company.marker = map_widget.set_marker(
-        company.coordinates[0],
-        company.coordinates[1],
-        text=company.name
-    )
+    company.marker = map_widget.set_marker(company.coordinates[0], company.coordinates[1], text=company.name)
 
+def create_employee_marker(employee):
+    employee.marker = map_widget_employee.set_marker(employee.coordinates[0], employee.coordinates[1], text=f"{employee.name} {employee.surname}")
+
+# SHOW OBJECT ON LIST
 def show_companies() -> None:
     listbox_list_object.delete(0, END)
 
     for idx, company in enumerate(companies):
         listbox_list_object.insert(idx, company.name)
 
+def show_employees() -> None:
+    listbox_list_object_employee.delete(0, END)
 
+    for idx, employee in enumerate(employees):
+        listbox_list_object_employee.insert(idx, employee.name)
+
+# ADD OBJECT ON LIST
 def add_company():
     name = entry_name.get()
     city = entry_city.get()
@@ -36,7 +43,38 @@ def add_company():
     entry_name.focus()
     show_companies()
 
+def add_employee():
+    name = entry_name_employee.get()
+    surname = entry_surname_employee.get()
+    city = entry_city_employee.get()
+    street = entry_street_employee.get()
+    company = combobox_company_employee.get()
 
+    selected_company = combobox_company_employee.get()
+    if not selected_company:
+        print("Błąd: Nie wybrano firmy!")
+        return
+
+    new_employee = Employee(name, surname, city, street, company)
+    employees.append(new_employee)
+
+    create_employee_marker(new_employee)
+    map_widget_employee.set_position(new_employee.coordinates[0], new_employee.coordinates[1])
+
+    entry_name_employee.delete(0, END)
+    entry_surname_employee.delete(0, END)
+    entry_city_employee.delete(0, END)
+    entry_street_employee.delete(0, END)
+
+    combobox_company_employee.set('')
+    entry_name_employee.focus()
+    show_employees()
+
+def update_company_dropdown():
+    company_names = [c.name for c in companies]
+    combobox_company_employee['values'] = company_names
+
+#REMOVE OBJECT FROM LIST
 def remove_company() -> None:
     i = listbox_list_object.index(ACTIVE)
 
@@ -47,6 +85,7 @@ def remove_company() -> None:
     companies.pop(i)
     show_companies()
 
+#SHOW OBJECT DETAILS
 def show_company_details():
     i = listbox_list_object.index(ACTIVE)
     name = companies[i].name
@@ -59,6 +98,7 @@ def show_company_details():
     map_widget.set_position(companies[i].coordinates[0], companies[i].coordinates[1])
     map_widget.set_zoom(12)
 
+#EDIT OBJECT DETAILS
 def edit_company():
     i = listbox_list_object.index(ACTIVE)
     name = companies[i].name
@@ -71,7 +111,7 @@ def edit_company():
 
     button_add_object.config(text = "Zapisz zmiany", command = lambda: update_company(i))
 
-
+#UPDATE OBJECT DETAILS
 def update_company(i):
     companies[i].name = entry_name.get()
     companies[i].city = entry_city.get()
@@ -92,6 +132,7 @@ def update_company(i):
     entry_name.focus()
     show_companies()
 
+# APPLICATION WINDOW
 root = Tk()
 root.title("Aplikacja Zarządzania Firmami i Trasami")
 root.geometry("1024x760")
@@ -107,6 +148,7 @@ def switch_view(event=None):
     elif view == "Pracownicy":
         frame_employee.grid(row=1, column=0, columnspan=2)
         frame_company.grid_forget()
+        update_company_dropdown()
 
 combobox_view = ttk.Combobox(root, textvariable=selected_view, values=["Firma", "Pracownicy"], state="readonly")
 combobox_view.set("Firma")
@@ -241,7 +283,7 @@ label_street_employee.grid(row=4, column=0, sticky=W)
 
 entry_name_employee = Entry(frame_form_employee)
 entry_surname_employee = Entry(frame_form_employee)
-combobox_company_employee = ttk.Combobox(frame_form_employee, state="readonly")
+combobox_company_employee = ttk.Combobox(frame_form_employee, state = "readonly")
 entry_city_employee = Entry(frame_form_employee)
 entry_street_employee = Entry(frame_form_employee)
 
@@ -251,7 +293,7 @@ combobox_company_employee.grid(row=5, column=1)
 entry_city_employee.grid(row=3, column=1)
 entry_street_employee.grid(row=4, column=1)
 
-button_add_object_employee = Button(frame_form_employee, text="Dodaj pracownika")
+button_add_object_employee = Button(frame_form_employee, text = "Dodaj pracownika", command = add_employee)
 button_add_object_employee.grid(row=6, column=0, columnspan=2)
 
 
