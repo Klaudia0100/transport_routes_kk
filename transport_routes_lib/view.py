@@ -139,6 +139,22 @@ def edit_company():
 
     button_add_object.config(text = "Zapisz zmiany", command = lambda: update_company(i))
 
+def edit_employee():
+    i = listbox_list_object_employee.index(ACTIVE)
+    name = employees[i].name
+    surname = employees[i].surname
+    city = employees[i].city
+    street = employees[i].street
+    company = employees[i].company
+
+    entry_name_employee.insert(0, name)
+    entry_surname_employee.insert(0, surname)
+    entry_city_employee.insert(0, city)
+    entry_street_employee.insert(0, street)
+    combobox_company_employee.set(company)
+
+    button_add_object_employee.config(text="Zapisz zmiany", command=lambda: update_employee(i))
+
 #UPDATE OBJECT DETAILS
 def update_company(i):
     companies[i].name = entry_name.get()
@@ -159,6 +175,31 @@ def update_company(i):
 
     entry_name.focus()
     show_companies()
+
+
+def update_employee(i):
+    employees[i].name = entry_name_employee.get()
+    employees[i].surname = entry_surname_employee.get()
+    employees[i].city = entry_city_employee.get()
+    employees[i].street = entry_street_employee.get()
+    employees[i].company = combobox_company_employee.get()
+
+    address = f"{employees[i].city}, {employees[i].street}"
+    employees[i].coordinates = get_coordinates(address)
+
+    if employees[i].marker:
+        employees[i].marker.set_position(employees[i].coordinates[0], employees[i].coordinates[1])
+        employees[i].marker.set_text(f"{employees[i].name} {employees[i].surname}")
+
+    button_add_object_employee.config(text="Dodaj pracownika", command = add_employee)
+    entry_name_employee.delete(0, END)
+    entry_surname_employee.delete(0, END)
+    entry_city_employee.delete(0, END)
+    entry_street_employee.delete(0, END)
+    combobox_company_employee.set('')
+
+    entry_name_employee.focus()
+    show_employees()
 
 # APPLICATION WINDOW
 root = Tk()
@@ -286,7 +327,7 @@ label_list_object_employee = Label(frame_list_object_employee, text="Lista praco
 listbox_list_object_employee = Listbox(frame_list_object_employee)
 button_show_object_details_employee = Button(frame_list_object_employee, text="Pokaż szczegóły", command = show_employee_details)
 button_delete_object_employee = Button(frame_list_object_employee, text="Usuń", command = remove_employee)
-button_edit_object_employee = Button(frame_list_object_employee, text="Edytuj")
+button_edit_object_employee = Button(frame_list_object_employee, text="Edytuj", command = edit_employee)
 label_list_object_employee.grid(row=0, column=0)
 listbox_list_object_employee.grid(row=1, column=0)
 button_show_object_details_employee.grid(row=2, column=0)
