@@ -30,12 +30,12 @@ class Company:
 
 
 class Employee:
-    def __init__(self, name: str, surname: str, city: str, street: str, company_name: str):
+    def __init__(self, name: str, surname: str, city: str, street: str, company: str):
         self.name = name
         self.surname = surname
         self.city = city
         self.street = street
-        self.company_name = company_name
+        self.company = company
         self.coordinates = get_coordinates(f"{city}, {street}")
         self.marker = None
 

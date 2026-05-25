@@ -109,6 +109,23 @@ def show_company_details():
     map_widget.set_position(companies[i].coordinates[0], companies[i].coordinates[1])
     map_widget.set_zoom(12)
 
+
+def show_employee_details():
+    i = listbox_list_object_employee.index(ACTIVE)
+    name = employees[i].name
+    surname = employees[i].surname
+    city = employees[i].city
+    street = employees[i].street
+    company = employees[i].company
+
+    label_name_details_object_value_employee.config(text=name)
+    label_surname_details_object_value_employee.config(text=surname)
+    label_city_details_object_value_employee.config(text=city)
+    label_street_details_object_value_employee.config(text=street)
+    label_company_details_object_value_employee.config(text=company)
+    map_widget_employee.set_position(employees[i].coordinates[0], employees[i].coordinates[1])
+    map_widget_employee.set_zoom(12)
+
 #EDIT OBJECT DETAILS
 def edit_company():
     i = listbox_list_object.index(ACTIVE)
@@ -267,7 +284,7 @@ frame_map_employee.grid(row=2, column=0, columnspan=2)
 # RAMKA LISTA OBIEKTÓW EMPLOYEE
 label_list_object_employee = Label(frame_list_object_employee, text="Lista pracowników: ")
 listbox_list_object_employee = Listbox(frame_list_object_employee)
-button_show_object_details_employee = Button(frame_list_object_employee, text="Pokaż szczegóły")
+button_show_object_details_employee = Button(frame_list_object_employee, text="Pokaż szczegóły", command = show_employee_details)
 button_delete_object_employee = Button(frame_list_object_employee, text="Usuń", command = remove_employee)
 button_edit_object_employee = Button(frame_list_object_employee, text="Edytuj")
 label_list_object_employee.grid(row=0, column=0)
