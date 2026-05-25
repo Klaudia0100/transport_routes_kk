@@ -200,6 +200,25 @@ def show_employee_details():
     map_widget_employee.set_position(employees[i].coordinates[0], employees[i].coordinates[1])
     map_widget_employee.set_zoom(12)
 
+
+def show_route_details():
+    i = listbox_list_object_route.index(ACTIVE)
+    name = routes[i].name
+    start = routes[i].start_location
+    end = routes[i].end_location
+    company = routes[i].company
+
+    label_name_val_route.config(text=name)
+    label_start_val_route.config(text=start)
+    label_end_val_route.config(text=end)
+    label_comp_val_route.config(text=company)
+
+    mid_lat = (routes[i].start_coords[0] + routes[i].end_coords[0]) / 2
+    mid_lon = (routes[i].start_coords[1] + routes[i].end_coords[1]) / 2
+
+    map_widget_route.set_position(mid_lat, mid_lon)
+    map_widget_route.set_zoom(8)
+
 #EDIT OBJECT DETAILS
 def edit_company():
     i = listbox_list_object.index(ACTIVE)
@@ -550,7 +569,7 @@ frame_map_route.grid(row=2, column=0, columnspan=2)
 # RAMKA LISTA OBIEKTÓW ROUTE
 label_list_object_route = Label(frame_list_object_route, text="Lista tras: ")
 listbox_list_object_route = Listbox(frame_list_object_route)
-button_show_details_route = Button(frame_list_object_route, text="Pokaż szczegóły")
+button_show_details_route = Button(frame_list_object_route, text="Pokaż szczegóły", command = show_route_details)
 button_delete_route = Button(frame_list_object_route, text="Usuń", command = remove_route)
 button_edit_route = Button(frame_list_object_route, text="Edytuj", command = edit_route)
 
