@@ -85,6 +85,17 @@ def remove_company() -> None:
     companies.pop(i)
     show_companies()
 
+def remove_employee() -> None:
+    i = listbox_list_object_employee.index(ACTIVE)
+
+    employee = employees[i]
+    if employee.marker:
+        employee.marker.delete()
+
+    employees.pop(i)
+    show_employees()
+
+
 #SHOW OBJECT DETAILS
 def show_company_details():
     i = listbox_list_object.index(ACTIVE)
@@ -257,7 +268,7 @@ frame_map_employee.grid(row=2, column=0, columnspan=2)
 label_list_object_employee = Label(frame_list_object_employee, text="Lista pracowników: ")
 listbox_list_object_employee = Listbox(frame_list_object_employee)
 button_show_object_details_employee = Button(frame_list_object_employee, text="Pokaż szczegóły")
-button_delete_object_employee = Button(frame_list_object_employee, text="Usuń")
+button_delete_object_employee = Button(frame_list_object_employee, text="Usuń", command = remove_employee)
 button_edit_object_employee = Button(frame_list_object_employee, text="Edytuj")
 label_list_object_employee.grid(row=0, column=0)
 listbox_list_object_employee.grid(row=1, column=0)
