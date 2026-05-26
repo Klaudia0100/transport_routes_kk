@@ -77,7 +77,6 @@ def show_routes() -> None:
 
         update_route_marker(route, is_visible)
 
-
 # ADD OBJECT ON LIST
 def add_company():
     name = entry_name.get()
