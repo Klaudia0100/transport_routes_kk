@@ -50,17 +50,33 @@ def show_companies() -> None:
     for idx, company in enumerate(companies):
         listbox_list_object.insert(idx, company.name)
 
+
 def show_employees() -> None:
+    current_filter = filter_combobox_employee.get()
+
     listbox_list_object_employee.delete(0, END)
 
-    for idx, employee in enumerate(employees):
-        listbox_list_object_employee.insert(idx, employee.name)
+    for employee in employees:
+        is_visible = (current_filter == "Wszystkie" or employee.company == current_filter)
+
+        if is_visible:
+            listbox_list_object_employee.insert(END, f"{employee.name} {employee.surname}")
+
+        update_employee_marker(employee, is_visible)
+
 
 def show_routes() -> None:
+    current_filter = filter_combobox_route.get()
     listbox_list_object_route.delete(0, END)
 
-    for idx, route in enumerate(routes):
-        listbox_list_object_route.insert(idx, route.name)
+    for route in routes:
+        is_visible = (current_filter == "Wszystkie" or route.company == current_filter)
+
+        if is_visible:
+            listbox_list_object_route.insert(END, route.name)
+
+        update_route_marker(route, is_visible)
+
 
 # ADD OBJECT ON LIST
 def add_company():
@@ -133,6 +149,9 @@ def update_company_dropdown():
     combobox_company_employee['values'] = company_names
     combobox_company_route['values'] = company_names
 
+    new_values = ["Wszystkie"] + company_names
+    filter_combobox_employee['values'] = new_values
+    filter_combobox_route['values'] = new_values
 
 #REMOVE OBJECT FROM LIST
 def remove_company() -> None:
@@ -145,29 +164,35 @@ def remove_company() -> None:
     companies.pop(i)
     show_companies()
 
+
 def remove_employee() -> None:
-    i = listbox_list_object_employee.index(ACTIVE)
+    selected_name = listbox_list_object_employee.get(ACTIVE)
 
-    employee = employees[i]
-    if employee.marker:
-        employee.marker.delete()
+    for employee in employees:
+        if f"{employee.name} {employee.surname}" == selected_name:
+            if employee.marker:
+                employee.marker.delete()
 
-    employees.pop(i)
+            employees.remove(employee)
+
     show_employees()
 
 
 def remove_route() -> None:
-    i = listbox_list_object_route.index(ACTIVE)
+    selected_name = listbox_list_object_route.get(ACTIVE)
 
-    route = routes[i]
-    if route.marker_start:
-        map_widget_route.delete(route.marker_start)
-    if route.marker_end:
-        map_widget_route.delete(route.marker_end)
-    if route.path:
-        map_widget_route.delete(route.path)
+    for route in routes:
+        if route.name == selected_name:
+            if route.marker_start:
+                map_widget_route.delete(route.marker_start)
+            if route.marker_end:
+                map_widget_route.delete(route.marker_end)
+            if route.path:
+                map_widget_route.delete(route.path)
 
-    routes.pop(i)
+            routes.remove(route)
+            break
+
     show_routes()
 
 #SHOW OBJECT DETAILS
@@ -251,7 +276,6 @@ def edit_employee():
 def edit_route():
     i = listbox_list_object_route.index(ACTIVE)
     name = routes[i].name
-    # Rozbijamy start_location i end_location tak jak Ty to robisz w klasie
     start_parts = routes[i].start_location.split(", ")
     end_parts = routes[i].end_location.split(", ")
     company = routes[i].company
@@ -340,6 +364,60 @@ def update_route(i):
 
     entry_name_route.focus()
     show_routes()
+
+# FILTER EMPLOYEES/ROUTES BASED ON COMPANY
+selected_company_filter = "Wszystkie"
+
+def update_employee_marker(employee, is_visible):
+    if is_visible:
+        if employee.marker is None:
+            create_employee_marker(employee)
+    else:
+        if employee.marker is not None:
+            employee.marker.delete()
+            employee.marker = None
+
+def filter_employees_by_company(event):
+    global selected_company_filter
+    selected_company_filter = filter_combobox_employee.get()
+
+    listbox_list_object_employee.delete(0, END)
+
+    for i in range(len(employees)):
+        is_visible = (selected_company_filter == "Wszystkie" or employees[i].company == selected_company_filter)
+
+        if is_visible:
+            listbox_list_object_employee.insert(END, f"{employees[i].name} {employees[i].surname}")
+
+        update_employee_marker(employees[i], is_visible)
+
+def update_route_marker(route, is_visible):
+    if is_visible:
+        if route.marker_start is None:
+            create_route_visualization(route)
+    else:
+        if route.marker_start is not None:
+            map_widget_route.delete(route.marker_start)
+            route.marker_start = None
+        if route.marker_end is not None:
+            map_widget_route.delete(route.marker_end)
+            route.marker_end = None
+        if route.path is not None:
+            map_widget_route.delete(route.path)
+            route.path = None
+
+def filter_routes_by_company(event):
+    global selected_company_filter
+    selected_company_filter = filter_combobox_route.get()
+
+    listbox_list_object_route.delete(0, END)
+    for i in range(len(routes)):
+        is_visible = (selected_company_filter == "Wszystkie" or routes[i].company == selected_company_filter)
+
+        if is_visible:
+            listbox_list_object_route.insert(END, routes[i].name)
+
+        update_route_marker(routes[i], is_visible)
 
 
 # APPLICATION WINDOW
@@ -471,16 +549,27 @@ frame_map_employee.grid(row=2, column=0, columnspan=2)
 
 
 # RAMKA LISTA OBIEKTÓW EMPLOYEE
+# 1. EMPLOYEES LIST
 label_list_object_employee = Label(frame_list_object_employee, text="Lista pracowników: ")
 listbox_list_object_employee = Listbox(frame_list_object_employee)
-button_show_object_details_employee = Button(frame_list_object_employee, text="Pokaż szczegóły", command = show_employee_details)
-button_delete_object_employee = Button(frame_list_object_employee, text="Usuń", command = remove_employee)
-button_edit_object_employee = Button(frame_list_object_employee, text="Edytuj", command = edit_employee)
+button_show_object_details_employee = Button(frame_list_object_employee, text="Pokaż szczegóły", command=show_employee_details)
+button_delete_object_employee = Button(frame_list_object_employee, text="Usuń", command=remove_employee)
+button_edit_object_employee = Button(frame_list_object_employee, text="Edytuj", command=edit_employee)
+
 label_list_object_employee.grid(row=0, column=0)
 listbox_list_object_employee.grid(row=1, column=0)
 button_show_object_details_employee.grid(row=2, column=0)
 button_delete_object_employee.grid(row=2, column=1)
 button_edit_object_employee.grid(row=2, column=2)
+
+# 2. FILTER
+label_filter_employee = Label(frame_list_object_employee, text="Filtruj wg firmy:")
+filter_combobox_employee = ttk.Combobox(frame_list_object_employee, values=["Wszystkie"] + [c.name for c in companies], state="readonly")
+filter_combobox_employee.set("Wszystkie")
+filter_combobox_employee.bind("<<ComboboxSelected>>", filter_employees_by_company)
+
+label_filter_employee.grid(row=3, column=0, pady=(10, 0))
+filter_combobox_employee.grid(row=4, column=0)
 
 
 # RAMKA FORMULARZ EMPLOYEE
@@ -567,17 +656,27 @@ frame_details_object_route.grid(row=1, column=0, columnspan=2, padx=50, pady=20)
 frame_map_route.grid(row=2, column=0, columnspan=2)
 
 # RAMKA LISTA OBIEKTÓW ROUTE
+# 1. ROUTES LIST
 label_list_object_route = Label(frame_list_object_route, text="Lista tras: ")
 listbox_list_object_route = Listbox(frame_list_object_route)
-button_show_details_route = Button(frame_list_object_route, text="Pokaż szczegóły", command = show_route_details)
-button_delete_route = Button(frame_list_object_route, text="Usuń", command = remove_route)
-button_edit_route = Button(frame_list_object_route, text="Edytuj", command = edit_route)
+button_show_details_route = Button(frame_list_object_route, text="Pokaż szczegóły", command=show_route_details)
+button_delete_route = Button(frame_list_object_route, text="Usuń", command=remove_route)
+button_edit_route = Button(frame_list_object_route, text="Edytuj", command=edit_route)
 
 label_list_object_route.grid(row=0, column=0)
 listbox_list_object_route.grid(row=1, column=0)
 button_show_details_route.grid(row=2, column=0)
 button_delete_route.grid(row=2, column=1)
 button_edit_route.grid(row=2, column=2)
+
+# 2. FILTER
+label_filter_route = Label(frame_list_object_route, text="Filtruj wg firmy:")
+filter_combobox_route = ttk.Combobox(frame_list_object_route, values=["Wszystkie"] + [c.name for c in companies], state="readonly")
+filter_combobox_route.set("Wszystkie")
+filter_combobox_route.bind("<<ComboboxSelected>>", filter_routes_by_company)
+
+label_filter_route.grid(row=3, column=0, pady=(10, 0))
+filter_combobox_route.grid(row=4, column=0)
 
 # RAMKA FORMULARZ ROUTE
 label_form_route = Label(frame_form_route, text="Formularz:")
