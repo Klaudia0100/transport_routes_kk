@@ -2,7 +2,7 @@ from tkinter import *
 import tkinter.ttk as ttk
 import tkintermapview
 
-from model import Company, companies, Employee, employees, Route, routes, get_coordinates
+from model import Company, companies, Employee, employees, Route, routes, Client, clients, get_coordinates
 
 # MAP MARKER
 def create_company_marker(company):
@@ -51,6 +51,16 @@ def show_companies() -> None:
         listbox_list_object.insert(idx, company.name)
 
 
+def show_clients(event=None):
+    current_company = combobox_clients_company.get()
+    listbox_list_clients.delete(0, END)
+
+    if current_company:
+        for client in clients:
+            if client.company == current_company:
+                listbox_list_clients.insert(END, f"{client.name} {client.surname}")
+
+
 def show_employees() -> None:
     current_filter = filter_combobox_employee.get()
 
@@ -95,6 +105,25 @@ def add_company():
 
     entry_name.focus()
     show_companies()
+
+    update_client_combobox()
+    update_company_dropdown()
+
+
+def add_client():
+    company = combobox_clients_company.get()
+
+    name = entry_client_name.get()
+    surname = entry_client_surname.get()
+
+    if name and surname:
+        new_client = Client(name, surname, company)
+        clients.append(new_client)
+
+        entry_client_name.delete(0, END)
+        entry_client_surname.delete(0, END)
+
+        show_clients()
 
 def add_employee():
     name = entry_name_employee.get()
@@ -142,6 +171,7 @@ def add_route():
 
     entry_name_route.focus()
     show_routes()
+    update_client_combobox()
 
 def update_company_dropdown():
     company_names = [c.name for c in companies]
@@ -151,6 +181,10 @@ def update_company_dropdown():
     new_values = ["Wszystkie"] + company_names
     filter_combobox_employee['values'] = new_values
     filter_combobox_route['values'] = new_values
+
+def update_client_combobox():
+    company_names = [c.name for c in companies]
+    combobox_clients_company['values'] = company_names
 
 #REMOVE OBJECT FROM LIST
 def remove_company() -> None:
@@ -162,7 +196,23 @@ def remove_company() -> None:
 
     companies.pop(i)
     show_companies()
+    update_client_combobox()
 
+
+def remove_client():
+    selected_fullname = listbox_list_clients.get(ACTIVE)
+
+    company = combobox_clients_company.get()
+
+    if not selected_fullname or not company:
+        return
+
+    for client in clients:
+        if f"{client.name} {client.surname}" == selected_fullname and client.company == company:
+            clients.remove(client)
+            break
+
+    show_clients()
 
 def remove_employee() -> None:
     selected_name = listbox_list_object_employee.get(ACTIVE)
@@ -207,6 +257,7 @@ def show_company_details():
     map_widget.set_position(companies[i].coordinates[0], companies[i].coordinates[1])
     map_widget.set_zoom(12)
 
+    show_clients()
 
 def show_employee_details():
     i = listbox_list_object_employee.index(ACTIVE)
@@ -452,26 +503,25 @@ combobox_view.bind("<<ComboboxSelected>>", switch_view)
 
 # FRAME COMPANY
 frame_company = Frame(root)
-frame_company.grid(row=1, column=0, columnspan=2)
+frame_company.grid(row=1, column=0, columnspan=1)
 
 frame_list_object = Frame(frame_company)
 frame_form = Frame(frame_company)
 frame_details_object = Frame(frame_company)
 frame_map = Frame(frame_company)
 
-frame_list_object.grid(row=0, column=0, padx=50)
-frame_form.grid(row=0, column=1)
-frame_details_object.grid(row=1, column=0, columnspan=2, padx=50, pady=20)
-frame_map.grid(row=2, column=0, columnspan=2)
+frame_list_object.grid(row=0, column=0, padx=10, sticky=N)
+frame_form.grid(row=0, column=1, padx=10, sticky=N)
 
+frame_details_object.grid(row=1, column=0, columnspan=3, pady=20)
+frame_map.grid(row=2, column=0, columnspan=3)
 
-# RAMKA LISTA OBIEKTÓW COMPANY
+# FRAME LIST OF OBJECTS COMPANY
 label_list_object = Label(frame_list_object, text="Lista firm: ")
 listbox_list_object = Listbox(frame_list_object)
-
-button_show_object_details = Button(frame_list_object, text="Pokaż szczegóły", command = show_company_details)
-button_delete_object = Button(frame_list_object, text="Usuń", command = remove_company)
-button_edit_object = Button(frame_list_object, text="Edytuj", command = edit_company)
+button_show_object_details = Button(frame_list_object, text="Pokaż szczegóły", command=show_company_details)
+button_delete_object = Button(frame_list_object, text="Usuń", command=remove_company)
+button_edit_object = Button(frame_list_object, text="Edytuj", command=edit_company)
 
 label_list_object.grid(row=0, column=0)
 listbox_list_object.grid(row=1, column=0)
@@ -479,58 +529,81 @@ button_show_object_details.grid(row=2, column=0)
 button_delete_object.grid(row=2, column=1)
 button_edit_object.grid(row=2, column=2)
 
-
-# RAMKA FORMULARZ COMPANY
+# FRAME FORM COMPANY
 label_form = Label(frame_form, text="Formularz: ")
 label_name = Label(frame_form, text="Nazwa firmy: ")
 label_city = Label(frame_form, text="Miasto: ")
 label_street = Label(frame_form, text="Ulica: ")
+entry_name = Entry(frame_form)
+entry_city = Entry(frame_form)
+entry_street = Entry(frame_form)
+button_add_object = Button(frame_form, text="Dodaj firmę", command=add_company)
 
 label_form.grid(row=0, column=0, columnspan=2)
 label_name.grid(row=1, column=0, sticky=W)
 label_city.grid(row=2, column=0, sticky=W)
 label_street.grid(row=3, column=0, sticky=W)
-
-entry_name = Entry(frame_form)
-entry_city = Entry(frame_form)
-entry_street = Entry(frame_form)
-
 entry_name.grid(row=1, column=1)
 entry_city.grid(row=2, column=1)
 entry_street.grid(row=3, column=1)
-
-button_add_object = Button(frame_form, text="Dodaj firmę", command=add_company)
 button_add_object.grid(row=5, column=0, columnspan=2)
 
+# FRAME CLIENTS
+frame_clients = Frame(frame_company)
+frame_clients.grid(row=0, column=2, padx=10, sticky=N)
+
+Label(frame_clients, text="Lista klientów:").grid(row=0, column=0, columnspan=2, sticky=W)
+combobox_clients_company = ttk.Combobox(frame_clients, values=[c.name for c in companies], state="readonly", width=15)
+combobox_clients_company.grid(row=1, column=0, columnspan=2, pady=(0, 10), sticky=W)
+combobox_clients_company.bind("<<ComboboxSelected>>", lambda e: show_clients())
+
+frame_content = Frame(frame_clients)
+frame_content.grid(row=2, column=0, columnspan=2, sticky=NW)
+
+listbox_list_clients = Listbox(frame_content, height=8, width=18)
+listbox_list_clients.grid(row=0, column=0, padx=(0, 10))
+
+form_fields = Frame(frame_content)
+form_fields.grid(row=0, column=1, sticky=N)
+
+Label(form_fields, text="Imię:").grid(row=0, column=0, sticky=W)
+entry_client_name = Entry(form_fields, width=15)
+entry_client_name.grid(row=1, column=0, pady=(0, 5), sticky=W)
+
+Label(form_fields, text="Nazwisko:").grid(row=2, column=0, sticky=W)
+entry_client_surname = Entry(form_fields, width=15)
+entry_client_surname.grid(row=3, column=0, pady=(0, 5), sticky=W)
+
+frame_buttons = Frame(form_fields)
+frame_buttons.grid(row=4, column=0, pady=5, sticky=W)
+
+button_add_client = Button(frame_buttons, text="Dodaj", command=add_client)
+button_add_client.grid(row=0, column=0, padx=2)
+
+button_delete_client = Button(frame_buttons, text="Usuń", command=remove_client)
+button_delete_client.grid(row=0, column=1, padx=2)
 
 # SZCZEGÓŁY OBIEKTU COMPANY
 label_details_object_title = Label(frame_details_object, text="Szczegóły firmy")
-
 label_name_details_object = Label(frame_details_object, text="Nazwa firmy:")
 label_name_details_object_value = Label(frame_details_object, text="...")
-
 label_city_details_object = Label(frame_details_object, text="Miasto:")
 label_city_details_object_value = Label(frame_details_object, text="...")
-
 label_street_details_object = Label(frame_details_object, text="Ulica:")
 label_street_details_object_value = Label(frame_details_object, text="...")
 
-label_details_object_title.grid(row=0, column=0, columnspan=2)
-
+label_details_object_title.grid(row=0, column=0, columnspan=6)
 label_name_details_object.grid(row=1, column=0, sticky=W)
 label_name_details_object_value.grid(row=1, column=1, sticky=W)
-
 label_city_details_object.grid(row=1, column=2, sticky=W)
 label_city_details_object_value.grid(row=1, column=3, sticky=W)
-
 label_street_details_object.grid(row=1, column=4, sticky=W)
 label_street_details_object_value.grid(row=1, column=5, sticky=W)
 
 # RAMKA MAPA COMPANY
-map_widget = tkintermapview.TkinterMapView(frame_map, width=1024, height=600, corner_radius=4)
+map_widget = tkintermapview.TkinterMapView(frame_map, width=1024, height=400, corner_radius=4)
 map_widget.set_zoom(6)
 map_widget.set_position(52.2, 21.0)
-
 map_widget.grid(row=0, column=0)
 
 
@@ -745,6 +818,7 @@ map_widget_route.grid(row=0, column=0)
 # APP START
 frame_company.grid(row=1, column=0, columnspan=2)
 frame_employee.grid_forget()
+update_client_combobox()
 
 switch_view()
 root.mainloop()

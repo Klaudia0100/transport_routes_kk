@@ -3,6 +3,7 @@ import tkintermapview
 companies: list = []
 employees: list = []
 routes: list = []
+clients: list = []
 
 def _build_headers(self, provider_key, **kwargs):
     return {"User-Agent": 'My User Agent 1.0'}
@@ -26,7 +27,13 @@ class Company:
         self.street = street
         self.coordinates = get_coordinates(f"{city}, {street}")
         self.marker = None
-        self.clients = []
+
+
+class Client:
+    def __init__(self, name: str, surname: str, company: str):
+        self.name = name
+        self.surname = surname
+        self.company = company
 
 
 class Employee:
