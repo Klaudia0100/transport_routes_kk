@@ -2,14 +2,15 @@ from tkinter import *
 import tkinter.ttk as ttk
 import tkintermapview
 
-from transport_routes_lib.model import Company, companies, Employee, employees, Route, routes, Client, clients, \
-    get_coordinates
+from transport_routes_lib.model import (Company, companies, Employee, employees, Route, routes, Client, clients,
+                                        get_coordinates)
 
 
 def start_app():
     # MAP MARKER
     def create_company_marker(company):
-        company.marker = map_widget.set_marker(company.coordinates[0], company.coordinates[1], text=company.name)
+        company.marker = map_widget_company.set_marker(company.coordinates[0], company.coordinates[1],
+                                                       text=company.name)
 
     def create_employee_marker(employee):
         employee.marker = map_widget_employee.set_marker(employee.coordinates[0], employee.coordinates[1],
@@ -50,10 +51,10 @@ def start_app():
 
     # SHOW OBJECT ON LIST
     def show_companies() -> None:
-        listbox_list_object.delete(0, END)
+        listbox_list_company.delete(0, END)
 
         for idx, company in enumerate(companies):
-            listbox_list_object.insert(idx, company.name)
+            listbox_list_company.insert(idx, company.name)
 
     def show_clients(event=None):
         current_company = combobox_clients_company.get()
@@ -91,21 +92,21 @@ def start_app():
 
     # ADD OBJECT ON LIST
     def add_company():
-        name = entry_name.get()
-        city = entry_city.get()
-        street = entry_street.get()
+        name = entry_name_company.get()
+        city = entry_city_company.get()
+        street = entry_street_company.get()
 
         new_company = Company(name, city, street)
         companies.append(new_company)
 
         create_company_marker(new_company)
-        map_widget.set_position(new_company.coordinates[0], new_company.coordinates[1])
+        map_widget_company.set_position(new_company.coordinates[0], new_company.coordinates[1])
 
-        entry_name.delete(0, END)
-        entry_city.delete(0, END)
-        entry_street.delete(0, END)
+        entry_name_company.delete(0, END)
+        entry_city_company.delete(0, END)
+        entry_street_company.delete(0, END)
 
-        entry_name.focus()
+        entry_name_company.focus()
         show_companies()
 
         update_client_combobox()
@@ -114,15 +115,15 @@ def start_app():
     def add_client():
         company = combobox_clients_company.get()
 
-        name = entry_client_name.get()
-        surname = entry_client_surname.get()
+        name = entry_name_client.get()
+        surname = entry_surname_client.get()
 
         if name and surname:
             new_client = Client(name, surname, company)
             clients.append(new_client)
 
-            entry_client_name.delete(0, END)
-            entry_client_surname.delete(0, END)
+            entry_name_client.delete(0, END)
+            entry_surname_client.delete(0, END)
 
             show_clients()
 
@@ -152,10 +153,10 @@ def start_app():
 
     def add_route():
         name = entry_name_route.get()
-        start_city = entry_start_city.get()
-        start_street = entry_start_street.get()
-        end_city = entry_end_city.get()
-        end_street = entry_end_street.get()
+        start_city = entry_start_city_route.get()
+        start_street = entry_start_street_route.get()
+        end_city = entry_end_city_route.get()
+        end_street = entry_end_street_route.get()
         company = combobox_company_route.get()
 
         new_route = Route(name, start_city, start_street, end_city, end_street, company)
@@ -164,10 +165,10 @@ def start_app():
         create_route_visualization(new_route)
 
         entry_name_route.delete(0, END)
-        entry_start_city.delete(0, END)
-        entry_start_street.delete(0, END)
-        entry_end_city.delete(0, END)
-        entry_end_street.delete(0, END)
+        entry_start_city_route.delete(0, END)
+        entry_start_street_route.delete(0, END)
+        entry_end_city_route.delete(0, END)
+        entry_end_street_route.delete(0, END)
         combobox_company_route.set('')
 
         entry_name_route.focus()
@@ -189,7 +190,7 @@ def start_app():
 
     # REMOVE OBJECT FROM LIST
     def remove_company() -> None:
-        i = listbox_list_object.index(ACTIVE)
+        i = listbox_list_company.index(ACTIVE)
 
         company = companies[i]
         if company.marker:
@@ -245,16 +246,16 @@ def start_app():
 
     # SHOW OBJECT DETAILS
     def show_company_details():
-        i = listbox_list_object.index(ACTIVE)
+        i = listbox_list_company.index(ACTIVE)
         name = companies[i].name
         city = companies[i].city
         street = companies[i].street
 
-        label_name_details_object_value.config(text=name)
-        label_city_details_object_value.config(text=city)
-        label_street_details_object_value.config(text=street)
-        map_widget.set_position(companies[i].coordinates[0], companies[i].coordinates[1])
-        map_widget.set_zoom(12)
+        label_name_details_company_value.config(text=name)
+        label_city_details_company_value.config(text=city)
+        label_street_details_company_value.config(text=street)
+        map_widget_company.set_position(companies[i].coordinates[0], companies[i].coordinates[1])
+        map_widget_company.set_zoom(12)
 
         show_clients()
 
@@ -266,11 +267,11 @@ def start_app():
         street = employees[i].street
         company = employees[i].company
 
-        label_name_details_object_value_employee.config(text=name)
-        label_surname_details_object_value_employee.config(text=surname)
-        label_city_details_object_value_employee.config(text=city)
-        label_street_details_object_value_employee.config(text=street)
-        label_company_details_object_value_employee.config(text=company)
+        label_name_details_employee_value.config(text=name)
+        label_surname_details_employee_value.config(text=surname)
+        label_city_details_employee_value.config(text=city)
+        label_street_details_employee_value.config(text=street)
+        label_company_details_employee_value.config(text=company)
         map_widget_employee.set_position(employees[i].coordinates[0], employees[i].coordinates[1])
         map_widget_employee.set_zoom(12)
 
@@ -281,10 +282,10 @@ def start_app():
         end = routes[i].end_location
         company = routes[i].company
 
-        label_name_val_route.config(text=name)
-        label_start_val_route.config(text=start)
-        label_end_val_route.config(text=end)
-        label_comp_val_route.config(text=company)
+        label_name_value_route.config(text=name)
+        label_start_value_route.config(text=start)
+        label_end_value_route.config(text=end)
+        label_comp_value_route.config(text=company)
 
         mid_lat = (routes[i].start_coords[0] + routes[i].end_coords[0]) / 2
         mid_lon = (routes[i].start_coords[1] + routes[i].end_coords[1]) / 2
@@ -294,16 +295,16 @@ def start_app():
 
     # EDIT OBJECT DETAILS
     def edit_company():
-        i = listbox_list_object.index(ACTIVE)
+        i = listbox_list_company.index(ACTIVE)
         name = companies[i].name
         city = companies[i].city
         street = companies[i].street
 
-        entry_name.insert(0, name)
-        entry_city.insert(0, city)
-        entry_street.insert(0, street)
+        entry_name_company.insert(0, name)
+        entry_city_company.insert(0, city)
+        entry_street_company.insert(0, street)
 
-        button_add_object.config(text="Zapisz zmiany", command=lambda: update_company(i))
+        button_add_company.config(text="Zapisz zmiany", command=lambda: update_company(i))
 
     def edit_employee():
         i = listbox_list_object_employee.index(ACTIVE)
@@ -329,19 +330,19 @@ def start_app():
         company = routes[i].company
 
         entry_name_route.insert(0, name)
-        entry_start_city.insert(0, start_parts[0])
-        entry_start_street.insert(0, start_parts[1])
-        entry_end_city.insert(0, end_parts[0])
-        entry_end_street.insert(0, end_parts[1])
+        entry_start_city_route.insert(0, start_parts[0])
+        entry_start_street_route.insert(0, start_parts[1])
+        entry_end_city_route.insert(0, end_parts[0])
+        entry_end_street_route.insert(0, end_parts[1])
         combobox_company_route.set(company)
 
         button_add_route.config(text="Zapisz zmiany", command=lambda: update_route(i))
 
     # UPDATE OBJECT DETAILS
     def update_company(i):
-        companies[i].name = entry_name.get()
-        companies[i].city = entry_city.get()
-        companies[i].street = entry_street.get()
+        companies[i].name = entry_name_company.get()
+        companies[i].city = entry_city_company.get()
+        companies[i].street = entry_street_company.get()
 
         address = f"{companies[i].city}, {companies[i].street}"
         companies[i].coordinates = get_coordinates(address)
@@ -350,12 +351,12 @@ def start_app():
             companies[i].marker.set_position(companies[i].coordinates[0], companies[i].coordinates[1])
             companies[i].marker.set_text(companies[i].name)
 
-        button_add_object.config(text="Dodaj firmę", command=add_company)
-        entry_name.delete(0, END)
-        entry_city.delete(0, END)
-        entry_street.delete(0, END)
+        button_add_company.config(text="Dodaj firmę", command=add_company)
+        entry_name_company.delete(0, END)
+        entry_city_company.delete(0, END)
+        entry_street_company.delete(0, END)
 
-        entry_name.focus()
+        entry_name_company.focus()
         show_companies()
 
     def update_employee(i):
@@ -385,8 +386,8 @@ def start_app():
     def update_route(i):
         routes[i].name = entry_name_route.get()
         routes[i].company = combobox_company_route.get()
-        routes[i].start_location = f"{entry_start_city.get()}, {entry_start_street.get()}"
-        routes[i].end_location = f"{entry_end_city.get()}, {entry_end_street.get()}"
+        routes[i].start_location = f"{entry_start_city_route.get()}, {entry_start_street_route.get()}"
+        routes[i].end_location = f"{entry_end_city_route.get()}, {entry_end_street_route.get()}"
         routes[i].start_coords = get_coordinates(routes[i].start_location)
         routes[i].end_coords = get_coordinates(routes[i].end_location)
 
@@ -403,10 +404,10 @@ def start_app():
         button_add_route.config(text="Dodaj trasę", command=add_route)
 
         entry_name_route.delete(0, END)
-        entry_start_city.delete(0, END)
-        entry_start_street.delete(0, END)
-        entry_end_city.delete(0, END)
-        entry_end_street.delete(0, END)
+        entry_start_city_route.delete(0, END)
+        entry_start_street_route.delete(0, END)
+        entry_end_city_route.delete(0, END)
+        entry_end_street_route.delete(0, END)
         combobox_company_route.set('')
 
         entry_name_route.focus()
@@ -499,50 +500,49 @@ def start_app():
 
     # FRAME COMPANY
     frame_company = Frame(root)
+    frame_list_company = Frame(frame_company)
+    frame_form_company = Frame(frame_company)
+    frame_details_company = Frame(frame_company)
+    frame_map_company = Frame(frame_company)
+
     frame_company.grid(row=1, column=0, columnspan=1)
-
-    frame_list_object = Frame(frame_company)
-    frame_form = Frame(frame_company)
-    frame_details_object = Frame(frame_company)
-    frame_map = Frame(frame_company)
-
-    frame_list_object.grid(row=0, column=0, padx=10, sticky=N)
-    frame_form.grid(row=0, column=1, padx=10, sticky=N)
-
-    frame_details_object.grid(row=1, column=0, columnspan=3, pady=20)
-    frame_map.grid(row=2, column=0, columnspan=3)
+    frame_list_company.grid(row=0, column=0, padx=10, sticky=N)
+    frame_form_company.grid(row=0, column=1, padx=10, sticky=N)
+    frame_details_company.grid(row=1, column=0, columnspan=3, pady=20)
+    frame_map_company.grid(row=2, column=0, columnspan=3)
 
     # FRAME LIST OF OBJECTS COMPANY
-    label_list_object = Label(frame_list_object, text="Lista firm: ")
-    listbox_list_object = Listbox(frame_list_object)
-    button_show_object_details = Button(frame_list_object, text="Pokaż szczegóły", command=show_company_details)
-    button_delete_object = Button(frame_list_object, text="Usuń", command=remove_company)
-    button_edit_object = Button(frame_list_object, text="Edytuj", command=edit_company)
+    label_list_company = Label(frame_list_company, text="Lista firm: ")
+    listbox_list_company = Listbox(frame_list_company)
+    button_show_details_company = Button(frame_list_company, text="Pokaż szczegóły", command=show_company_details)
+    button_delete_company = Button(frame_list_company, text="Usuń", command=remove_company)
+    button_edit_company = Button(frame_list_company, text="Edytuj", command=edit_company)
 
-    label_list_object.grid(row=0, column=0)
-    listbox_list_object.grid(row=1, column=0)
-    button_show_object_details.grid(row=2, column=0)
-    button_delete_object.grid(row=2, column=1)
-    button_edit_object.grid(row=2, column=2)
+    label_list_company.grid(row=0, column=0)
+    listbox_list_company.grid(row=1, column=0)
+    button_show_details_company.grid(row=2, column=0)
+    button_delete_company.grid(row=2, column=1)
+    button_edit_company.grid(row=2, column=2)
 
     # FRAME FORM COMPANY
-    label_form = Label(frame_form, text="Formularz: ")
-    label_name = Label(frame_form, text="Nazwa firmy: ")
-    label_city = Label(frame_form, text="Miasto: ")
-    label_street = Label(frame_form, text="Ulica: ")
-    entry_name = Entry(frame_form)
-    entry_city = Entry(frame_form)
-    entry_street = Entry(frame_form)
-    button_add_object = Button(frame_form, text="Dodaj firmę", command=add_company)
+    label_form_company = Label(frame_form_company, text="Formularz: ")
+    label_name_company = (Label(frame_form_company, text="Nazwa firmy: "))
+    label_city_company = Label(frame_form_company, text="Miasto: ")
+    label_street_company = Label(frame_form_company, text="Ulica: ")
 
-    label_form.grid(row=0, column=0, columnspan=2)
-    label_name.grid(row=1, column=0, sticky=W)
-    label_city.grid(row=2, column=0, sticky=W)
-    label_street.grid(row=3, column=0, sticky=W)
-    entry_name.grid(row=1, column=1)
-    entry_city.grid(row=2, column=1)
-    entry_street.grid(row=3, column=1)
-    button_add_object.grid(row=5, column=0, columnspan=2)
+    entry_name_company = Entry(frame_form_company)
+    entry_city_company = Entry(frame_form_company)
+    entry_street_company = Entry(frame_form_company)
+    button_add_company = Button(frame_form_company, text="Dodaj firmę", command=add_company)
+
+    label_form_company.grid(row=0, column=0, columnspan=2)
+    label_name_company.grid(row=1, column=0, sticky=W)
+    label_city_company.grid(row=2, column=0, sticky=W)
+    label_street_company.grid(row=3, column=0, sticky=W)
+    entry_name_company.grid(row=1, column=1)
+    entry_city_company.grid(row=2, column=1)
+    entry_street_company.grid(row=3, column=1)
+    button_add_company.grid(row=5, column=0, columnspan=2)
 
     # FRAME CLIENTS
     frame_clients = Frame(frame_company)
@@ -555,71 +555,70 @@ def start_app():
     combobox_clients_company.bind("<<ComboboxSelected>>", lambda e: show_clients())
 
     frame_content = Frame(frame_clients)
-    frame_content.grid(row=2, column=0, columnspan=2, sticky=NW)
-
     listbox_list_clients = Listbox(frame_content, height=8, width=18)
-    listbox_list_clients.grid(row=0, column=0, padx=(0, 10))
-
     form_fields = Frame(frame_content)
+
+    listbox_list_clients.grid(row=0, column=0, padx=(0, 10))
+    frame_content.grid(row=2, column=0, columnspan=2, sticky=NW)
     form_fields.grid(row=0, column=1, sticky=N)
 
     Label(form_fields, text="Imię:").grid(row=0, column=0, sticky=W)
-    entry_client_name = Entry(form_fields, width=15)
-    entry_client_name.grid(row=1, column=0, pady=(0, 5), sticky=W)
-
     Label(form_fields, text="Nazwisko:").grid(row=2, column=0, sticky=W)
-    entry_client_surname = Entry(form_fields, width=15)
-    entry_client_surname.grid(row=3, column=0, pady=(0, 5), sticky=W)
+
+    entry_name_client = Entry(form_fields, width=15)
+    entry_surname_client = Entry(form_fields, width=15)
+    entry_name_client.grid(row=1, column=0, pady=(0, 5), sticky=W)
+    entry_surname_client.grid(row=3, column=0, pady=(0, 5), sticky=W)
 
     frame_buttons = Frame(form_fields)
-    frame_buttons.grid(row=4, column=0, pady=5, sticky=W)
-
     button_add_client = Button(frame_buttons, text="Dodaj", command=add_client)
-    button_add_client.grid(row=0, column=0, padx=2)
-
     button_delete_client = Button(frame_buttons, text="Usuń", command=remove_client)
+
+    frame_buttons.grid(row=4, column=0, pady=5, sticky=W)
+    button_add_client.grid(row=0, column=0, padx=2)
     button_delete_client.grid(row=0, column=1, padx=2)
 
     # OBJECT DETAILS COMPANY
-    label_details_object_title = Label(frame_details_object, text="Szczegóły firmy")
-    label_name_details_object = Label(frame_details_object, text="Nazwa firmy:")
-    label_name_details_object_value = Label(frame_details_object, text="...")
-    label_city_details_object = Label(frame_details_object, text="Miasto:")
-    label_city_details_object_value = Label(frame_details_object, text="...")
-    label_street_details_object = Label(frame_details_object, text="Ulica:")
-    label_street_details_object_value = Label(frame_details_object, text="...")
+    label_details_object_title_company = Label(frame_details_company, text="Szczegóły firmy:")
+    label_name_details_company = Label(frame_details_company, text="Nazwa firmy:")
+    label_name_details_company_value = Label(frame_details_company, text="...")
+    label_city_details_company = Label(frame_details_company, text="Miasto:")
+    label_city_details_company_value = Label(frame_details_company, text="...")
+    label_street_details_company = Label(frame_details_company, text="Ulica:")
+    label_street_details_company_value = Label(frame_details_company, text="...")
 
-    label_details_object_title.grid(row=0, column=0, columnspan=6)
-    label_name_details_object.grid(row=1, column=0, sticky=W)
-    label_name_details_object_value.grid(row=1, column=1, sticky=W)
-    label_city_details_object.grid(row=1, column=2, sticky=W)
-    label_city_details_object_value.grid(row=1, column=3, sticky=W)
-    label_street_details_object.grid(row=1, column=4, sticky=W)
-    label_street_details_object_value.grid(row=1, column=5, sticky=W)
+    label_details_object_title_company.grid(row=0, column=0, columnspan=6)
+    label_name_details_company.grid(row=1, column=0, sticky=W)
+    label_name_details_company_value.grid(row=1, column=1, sticky=W)
+    label_city_details_company.grid(row=1, column=2, sticky=W)
+    label_city_details_company_value.grid(row=1, column=3, sticky=W)
+    label_street_details_company.grid(row=1, column=4, sticky=W)
+    label_street_details_company_value.grid(row=1, column=5, sticky=W)
 
     # MAP FRAME COMPANY
-    map_widget = tkintermapview.TkinterMapView(frame_map, width=1024, height=400, corner_radius=4)
-    map_widget.set_zoom(6)
-    map_widget.set_position(52.2, 21.0)
-    map_widget.grid(row=0, column=0)
+    map_widget_company = tkintermapview.TkinterMapView(frame_map_company, width=1024, height=400, corner_radius=4)
+    map_widget_company.set_zoom(6)
+    map_widget_company.set_position(52.2, 21.0)
+    map_widget_company.grid(row=0, column=0)
 
     # FRAME EMPLOYEE
     frame_employee = Frame(root)
-
     frame_list_object_employee = Frame(frame_employee)
     frame_form_employee = Frame(frame_employee)
     frame_details_object_employee = Frame(frame_employee)
     frame_map_employee = Frame(frame_employee)
+
     frame_list_object_employee.grid(row=0, column=0, padx=50)
     frame_form_employee.grid(row=0, column=1)
     frame_details_object_employee.grid(row=1, column=0, columnspan=2, padx=50, pady=20)
     frame_map_employee.grid(row=2, column=0, columnspan=2)
 
     # FRAME LIST OF OBJECTS EMPLOYEE
-    # 1. EMPLOYEES LIST
+    # /EMPLOYEES LIST/
     label_list_object_employee = Label(frame_list_object_employee, text="Lista pracowników: ")
     listbox_list_object_employee = Listbox(frame_list_object_employee)
-    button_show_object_details_employee = Button(frame_list_object_employee, text="Pokaż szczegóły", command=show_employee_details)
+    button_show_object_details_employee = Button(frame_list_object_employee, text="Pokaż szczegóły",
+                                                 command=show_employee_details)
     button_delete_object_employee = Button(frame_list_object_employee, text="Usuń", command=remove_employee)
     button_edit_object_employee = Button(frame_list_object_employee, text="Edytuj", command=edit_employee)
 
@@ -629,9 +628,10 @@ def start_app():
     button_delete_object_employee.grid(row=2, column=1)
     button_edit_object_employee.grid(row=2, column=2)
 
-    # 2. FILTER
+    # /FILTER/
     label_filter_employee = Label(frame_list_object_employee, text="Filtruj wg firmy:")
-    filter_combobox_employee = ttk.Combobox(frame_list_object_employee,values=["Wszystkie"] + [c.name for c in companies], state="readonly")
+    filter_combobox_employee = ttk.Combobox(frame_list_object_employee,
+                                            values=["Wszystkie"] + [c.name for c in companies], state="readonly")
     filter_combobox_employee.set("Wszystkie")
     filter_combobox_employee.bind("<<ComboboxSelected>>", filter_employees_by_company)
 
@@ -669,34 +669,29 @@ def start_app():
     button_add_object_employee.grid(row=6, column=0, columnspan=2)
 
     # OBJECT DETAILS EMPLOYEE
-    label_details_object_title_employee = Label(frame_details_object_employee, text="Szczegóły pracownika")
-    label_name_details_object_employee = Label(frame_details_object_employee, text="Imię:")
-    label_name_details_object_value_employee = Label(frame_details_object_employee, text="...")
-    label_surname_details_object_employee = Label(frame_details_object_employee, text="Nazwisko:")
-    label_surname_details_object_value_employee = Label(frame_details_object_employee, text="...")
-    label_city_details_object_employee = Label(frame_details_object_employee, text="Miasto:")
-    label_city_details_object_value_employee = Label(frame_details_object_employee, text="...")
-    label_street_details_object_employee = Label(frame_details_object_employee, text="Ulica:")
-    label_street_details_object_value_employee = Label(frame_details_object_employee, text="...")
-    label_company_details_object_employee = Label(frame_details_object_employee, text="Firma:")
-    label_company_details_object_value_employee = Label(frame_details_object_employee, text="...")
+    label_details_object_title_employee = Label(frame_details_object_employee, text="Szczegóły pracownika:")
+    label_name_details_employee = Label(frame_details_object_employee, text="Imię:")
+    label_name_details_employee_value = Label(frame_details_object_employee, text="...")
+    label_surname_details_employee = Label(frame_details_object_employee, text="Nazwisko:")
+    label_surname_details_employee_value = Label(frame_details_object_employee, text="...")
+    label_city_details_employee = Label(frame_details_object_employee, text="Miasto:")
+    label_city_details_employee_value = Label(frame_details_object_employee, text="...")
+    label_street_details_employee = Label(frame_details_object_employee, text="Ulica:")
+    label_street_details_employee_value = Label(frame_details_object_employee, text="...")
+    label_company_details_employee = Label(frame_details_object_employee, text="Firma:")
+    label_company_details_employee_value = Label(frame_details_object_employee, text="...")
 
-    label_details_object_title_employee.grid(row=0, column=0, columnspan=2)
-
-    label_name_details_object_employee.grid(row=1, column=0, sticky=W)
-    label_name_details_object_value_employee.grid(row=1, column=1, sticky=W)
-
-    label_surname_details_object_employee.grid(row=1, column=2, sticky=W)
-    label_surname_details_object_value_employee.grid(row=1, column=3, sticky=W)
-
-    label_city_details_object_employee.grid(row=1, column=4, sticky=W)
-    label_city_details_object_value_employee.grid(row=1, column=5, sticky=W)
-
-    label_street_details_object_employee.grid(row=1, column=6, sticky=W)
-    label_street_details_object_value_employee.grid(row=1, column=7, sticky=W)
-
-    label_company_details_object_employee.grid(row=1, column=8, sticky=W)
-    label_company_details_object_value_employee.grid(row=1, column=9, sticky=W)
+    label_details_object_title_employee.grid(row=0, column=0, columnspan=10)
+    label_name_details_employee.grid(row=1, column=0, sticky=W)
+    label_name_details_employee_value.grid(row=1, column=1, sticky=W)
+    label_surname_details_employee.grid(row=1, column=2, sticky=W)
+    label_surname_details_employee_value.grid(row=1, column=3, sticky=W)
+    label_city_details_employee.grid(row=1, column=4, sticky=W)
+    label_city_details_employee_value.grid(row=1, column=5, sticky=W)
+    label_street_details_employee.grid(row=1, column=6, sticky=W)
+    label_street_details_employee_value.grid(row=1, column=7, sticky=W)
+    label_company_details_employee.grid(row=1, column=8, sticky=W)
+    label_company_details_employee_value.grid(row=1, column=9, sticky=W)
 
     # MAP FRAME EMPLOYEE
     map_widget_employee = tkintermapview.TkinterMapView(frame_map_employee, width=1024, height=600, corner_radius=4)
@@ -706,7 +701,6 @@ def start_app():
 
     # FRAME ROUTE
     frame_route = Frame(root)
-
     frame_list_object_route = Frame(frame_route)
     frame_form_route = Frame(frame_route)
     frame_details_object_route = Frame(frame_route)
@@ -718,7 +712,7 @@ def start_app():
     frame_map_route.grid(row=2, column=0, columnspan=2)
 
     # FRAME LIST OF OBJECTS ROUTE
-    # 1. ROUTES LIST
+    # /ROUTES LIST/
     label_list_object_route = Label(frame_list_object_route, text="Lista tras: ")
     listbox_list_object_route = Listbox(frame_list_object_route)
     button_show_details_route = Button(frame_list_object_route, text="Pokaż szczegóły", command=show_route_details)
@@ -731,7 +725,7 @@ def start_app():
     button_delete_route.grid(row=2, column=1)
     button_edit_route.grid(row=2, column=2)
 
-    # 2. FILTER
+    # /FILTER/
     label_filter_route = Label(frame_list_object_route, text="Filtruj wg firmy:")
     filter_combobox_route = ttk.Combobox(frame_list_object_route, values=["Wszystkie"] + [c.name for c in companies],
                                          state="readonly")
@@ -744,63 +738,63 @@ def start_app():
     # FRAME FORM ROUTE
     label_form_route = Label(frame_form_route, text="Formularz:")
     label_name_route = Label(frame_form_route, text="Nazwa trasy:")
-    label_start = Label(frame_form_route, text="Start:")
-    label_start_city = Label(frame_form_route, text="miasto")
-    label_start_street = Label(frame_form_route, text="ulica")
-    label_end = Label(frame_form_route, text="Koniec:")
-    label_end_city = Label(frame_form_route, text="miasto")
-    label_end_street = Label(frame_form_route, text="ulica")
+    label_start_route = Label(frame_form_route, text="Start:")
+    label_start_city_route = Label(frame_form_route, text="miasto")
+    label_start_street_route = Label(frame_form_route, text="ulica")
+    label_end_route = Label(frame_form_route, text="Koniec:")
+    label_end_city_route = Label(frame_form_route, text="miasto")
+    label_end_street_route = Label(frame_form_route, text="ulica")
     label_company_route = Label(frame_form_route, text="Firma:")
 
     label_form_route.grid(row=0, column=0, columnspan=3, pady=5)
     label_name_route.grid(row=1, column=0, sticky=W)
-    label_start.grid(row=2, column=0, sticky=W)
-    label_start_city.grid(row=2, column=1, sticky=W, padx=5)
-    label_start_street.grid(row=3, column=1, sticky=W, padx=5)
-    label_end.grid(row=4, column=0, sticky=W)
-    label_end_city.grid(row=4, column=1, sticky=W, padx=5)
-    label_end_street.grid(row=5, column=1, sticky=W, padx=5)
+    label_start_route.grid(row=2, column=0, sticky=W)
+    label_start_city_route.grid(row=2, column=1, sticky=W, padx=5)
+    label_start_street_route.grid(row=3, column=1, sticky=W, padx=5)
+    label_end_route.grid(row=4, column=0, sticky=W)
+    label_end_city_route.grid(row=4, column=1, sticky=W, padx=5)
+    label_end_street_route.grid(row=5, column=1, sticky=W, padx=5)
     label_company_route.grid(row=6, column=0, sticky=W)
 
     entry_name_route = Entry(frame_form_route)
-    entry_start_city = Entry(frame_form_route)
-    entry_start_street = Entry(frame_form_route)
-    entry_end_city = Entry(frame_form_route)
-    entry_end_street = Entry(frame_form_route)
+    entry_start_city_route = Entry(frame_form_route)
+    entry_start_street_route = Entry(frame_form_route)
+    entry_end_city_route = Entry(frame_form_route)
+    entry_end_street_route = Entry(frame_form_route)
     combobox_company_route = ttk.Combobox(frame_form_route, state="readonly")
 
     entry_name_route.grid(row=1, column=2, sticky=W)
-    entry_start_city.grid(row=2, column=2, sticky=W)
-    entry_start_street.grid(row=3, column=2, sticky=W)
-    entry_end_city.grid(row=4, column=2, sticky=W)
-    entry_end_street.grid(row=5, column=2, sticky=W)
+    entry_start_city_route.grid(row=2, column=2, sticky=W)
+    entry_start_street_route.grid(row=3, column=2, sticky=W)
+    entry_end_city_route.grid(row=4, column=2, sticky=W)
+    entry_end_street_route.grid(row=5, column=2, sticky=W)
     combobox_company_route.grid(row=6, column=2, sticky=W)
 
     button_add_route = Button(frame_form_route, text="Dodaj trasę", command=add_route)
     button_add_route.grid(row=7, column=0, columnspan=3, pady=10)
 
     # OBJECT DETAILS ROUTE
-    label_details_title_route = Label(frame_details_object_route, text="Szczegóły trasy")
+    label_details_title_route = Label(frame_details_object_route, text="Szczegóły trasy:")
     label_name_details_route = Label(frame_details_object_route, text="Nazwa trasy:")
-    label_name_val_route = Label(frame_details_object_route, text="...")
+    label_name_value_route = Label(frame_details_object_route, text="...")
     label_start_details_route = Label(frame_details_object_route, text="Start:")
-    label_start_val_route = Label(frame_details_object_route, text="...")
+    label_start_value_route = Label(frame_details_object_route, text="...")
     label_end_details_route = Label(frame_details_object_route, text="Koniec:")
-    label_end_val_route = Label(frame_details_object_route, text="...")
+    label_end_value_route = Label(frame_details_object_route, text="...")
     label_comp_details_route = Label(frame_details_object_route, text="Firma:")
-    label_comp_val_route = Label(frame_details_object_route, text="...")
+    label_comp_value_route = Label(frame_details_object_route, text="...")
 
     label_details_title_route.grid(row=0, column=0, columnspan=8)
     label_name_details_route.grid(row=1, column=0)
-    label_name_val_route.grid(row=1, column=1)
+    label_name_value_route.grid(row=1, column=1)
     label_start_details_route.grid(row=1, column=2)
-    label_start_val_route.grid(row=1, column=3)
+    label_start_value_route.grid(row=1, column=3)
     label_end_details_route.grid(row=1, column=4)
-    label_end_val_route.grid(row=1, column=5)
+    label_end_value_route.grid(row=1, column=5)
     label_comp_details_route.grid(row=1, column=6)
-    label_comp_val_route.grid(row=1, column=7)
+    label_comp_value_route.grid(row=1, column=7)
 
-    # FRAME MAP ROUTE
+    # MAP FRAME ROUTE
     map_widget_route = tkintermapview.TkinterMapView(frame_map_route, width=1024, height=600, corner_radius=4)
     map_widget_route.set_zoom(6)
     map_widget_route.set_position(52.2, 21.0)
@@ -812,4 +806,5 @@ def start_app():
     update_client_combobox()
 
     switch_view()
+
     root.mainloop()
