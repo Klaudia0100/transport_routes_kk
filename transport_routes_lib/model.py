@@ -29,7 +29,6 @@ class Company:
         self.coordinates = get_coordinates(f"{city}, {street}")
         self.marker = None
 
-
 class Client:
     def __init__(self, name: str, surname: str, company: str):
         self.name = name
